@@ -415,6 +415,9 @@ minetest.register_node("tnt:gunpowder", {
 	on_blast = function(pos, intensity)
 		tnt.burn(pos, "tnt:gunpowder")
 	end,
+	on_ignite = function(pos, igniter)
+		minetest.set_node(pos, {name = "tnt:gunpowder_burning"})
+	end,
 })
 
 minetest.register_node("tnt:gunpowder_burning", {
@@ -549,6 +552,9 @@ function tnt.register_tnt(def)
 				minetest.after(0.1, function()
 					tnt.boom(pos, def)
 				end)
+			end,
+			on_ignite = function(pos, igniter)
+				minetest.set_node(pos, {name = "tnt:gunpowder_burning"})
 			end,
 			mesecons = {effector =
 				{action_on =
