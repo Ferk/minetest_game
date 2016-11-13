@@ -250,13 +250,15 @@ end
 
 function tnt.burn(pos, nodename)
 	local name = nodename or minetest.get_node(pos).name
-	local group = minetest.get_item_group(name, "tnt")
-	if group > 0 then
+	local def = minetest.registered_nodes[name]
+	if not def then
+		return
+	elseif def.on_ignite then
+		def.on_ignite(pos)
+	elseif minetest.get_item_group(name, "tnt") > 0
 		minetest.sound_play("tnt_ignite", {pos = pos})
 		minetest.set_node(pos, {name = name .. "_burning"})
 		minetest.get_node_timer(pos):start(1)
-	elseif name == "tnt:gunpowder" then
-		minetest.set_node(pos, {name = "tnt:gunpowder_burning"})
 	end
 end
 
@@ -420,6 +422,7 @@ minetest.register_node("tnt:gunpowder", {
 		minetest.set_node(pos, {name = "tnt:gunpowder_burning"})
 	end,
 	on_ignite = function(pos, igniter)
+		minetest.sound_play("tnt_ignite", {pos = pos})
 		minetest.set_node(pos, {name = "tnt:gunpowder_burning"})
 	end,
 })
