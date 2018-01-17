@@ -107,6 +107,7 @@ local function furnace_node_timer(pos, elapsed)
 	-- Inizialize metadata
 	--
 	local meta = minetest.get_meta(pos)
+	local fuel_power = meta:get_float("fuel_power") or 1
 	local fuel_time = meta:get_float("fuel_time") or 0
 	local src_time = meta:get_float("src_time") or 0
 	local fuel_totaltime = meta:get_float("fuel_totaltime") or 0
@@ -116,6 +117,8 @@ local function furnace_node_timer(pos, elapsed)
 
 	local cookable, cooked
 	local fuel
+
+        elapsed = elapsed * fuel_power -- apply fuel power as effective time multiplier
 
 	local update = true
 	while elapsed > 0 and update do
@@ -174,6 +177,7 @@ local function furnace_node_timer(pos, elapsed)
 					inv:set_stack("fuel", 1, afterfuel.items[1])
 					update = true
 					fuel_totaltime = fuel.time + (fuel_totaltime - fuel_time)
+                                        fuel_power = fuel.power
 				end
 			else
 				-- We don't need to get new fuel since there is no cookable item
@@ -244,6 +248,7 @@ local function furnace_node_timer(pos, elapsed)
 	--
 	meta:set_float("fuel_totaltime", fuel_totaltime)
 	meta:set_float("fuel_time", fuel_time)
+	meta:set_float("fuel_power", fuel_power)
 	meta:set_float("src_time", src_time)
 	meta:set_string("formspec", formspec)
 	meta:set_string("infotext", infotext)
